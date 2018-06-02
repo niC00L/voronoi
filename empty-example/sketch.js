@@ -2,28 +2,60 @@ let vw = $(window).width() - 300;
 let vh = $(window).height();
 let voronoi = d3.voronoi();
 
+function preload() {
+    img = loadImage('./sample-image.jpg');
+}
+
 function setup() {
     createCanvas(vw, vh);
     noLoop();
 }
 
 function draw() {
-    let points = getPoints(random(10, 50));
+    // image(img, 0, 0);
+
+    let points = gridPoints(img.width, img.height, 40, 30);
     voronoi.extent([[0, 0], [vw, vh]]);
     let vp = voronoi(points).polygons();
-    vp.forEach(function (p) {
-        push();
-        fill(random(255), random(255), random(255));
-        polygon(p);
-        pop();
-    });
+    alert("vypocitane");
+
+    for (let i = 0; i < vp.length; i++) {
+        let plg = vp[i];
+        let p = points[i];
+        if (plg) {
+            push();
+            fill(img.get(p[0], p[1]));
+            polygon(plg);
+            pop();
+        }
+    }
+    alert("vykreslene");
+    // vp.forEach(function (p) {
+    //     push();
+    //     fill(img.get[p]);
+    //     polygon(p);
+    // });
 }
 
-function getPoints(count) {
+function randomPoints(start, end, count) {
     let points = [];
-    let i;
-    for (i = 0; i <= count; i++) {
-        points.push([random(0, vw), random(0, vh)]);
+    for (let i = 0; i <= count; i++) {
+        points.push([random(start[0], end[0]), random(start[1], end[1])]);
+    }
+    return points;
+}
+
+function gridPoints(width, height, xCount, yCount) {
+    let xdist = width / xCount;
+    let ydist = height / yCount;
+    let points = [];
+    for (let i = 0; i < xCount; i++) {
+        for (let j = 0; j < yCount; j++) {
+            let x = i*xdist;
+            let y = j*ydist;
+            points.push([x + random(-10,10), y + random(-10,10)]);
+            // points.push([x, y]);
+        }
     }
     return points;
 }

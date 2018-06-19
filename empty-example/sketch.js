@@ -1,8 +1,9 @@
-let w = $(window).width() - 300;
-let h = $(window).height() - 200;
+let vw = $(window).width() - 300;
+let vh = $(window).height() - 200;
 let voronoi = d3.voronoi();
 let countSlider;
 let noiseSlider;
+let strokeSlider;
 let gridType;
 let file;
 let img;
@@ -15,14 +16,22 @@ function setup() {
     noLoop();
     countSlider = createSlider(1, 100, 30);
     noiseSlider = createSlider(0, 50, 0);
+    strokeSlider = createSlider(0, 100, 1);
     countSlider.input(draw);
     noiseSlider.input(draw);
+    strokeSlider.input(draw);
     gridType = createRadio();
     gridType.option("Grid");
     gridType.option("Random");
     gridType.input(draw);
     file = createFileInput(handleFile);
     file.input(draw);
+    bgColor = createInput('#ffffff', 'color');
+    fgColor = createInput('#ffffff', 'color');
+    outColor = createInput('#000000', 'color');
+    bgColor.input(draw);
+    fgColor.input(draw);
+    outColor.input(draw);
 }
 
 function handleFile(file) {
@@ -33,20 +42,28 @@ function handleFile(file) {
 }
 
 function draw() {
+    background(bgColor.value());
+    let fillColor = fgColor.value();
     if (img) {
-        w = img.width;
-        h = img.height;
-        image(img, 0, 0, w, h);
-    } else {}
-    let grid = gridSize(w, h, countSlider.value());
+        vw = img.width;
+        vh = img.height;
+        image(img, 0, 0, vw, vh);
+        fgColor.hide();
+        fillColor = null;
+    } else {
+        fgColor.show();
+        fillColor = fgColor.value();
+    }
+
+    let grid = gridSize(vw, vh, countSlider.value());
     let points;
 
     if (gridType.value() === "Grid") {
         noiseSlider.show();
-        points = gridPoints(w, h, grid[0], grid[1], Math.floor(w / grid[0] / 2));
+        points = gridPoints(vw, vh, grid[0], grid[1], Math.floor(vw / grid[0] / 2));
     } else if (gridType.value() === "Random") {
         noiseSlider.hide();
-        points = randomPoints([0, 0], [w, h], countSlider.value());
+        points = randomPoints([0, 0], [vw, vh], countSlider.value());
     }
     // } else {
     //     points = triangleGrid(gridPoints(img.width, img.height, grid[0], grid[1], 0), grid[1]);
@@ -54,12 +71,29 @@ function draw() {
     voronoi.extent([[0, 0], [vw, vh]]);
     let vp = voronoi(points).polygons();
 
+    drawPolygons(vp, points, fillColor, outColor.value(), strokeSlider.value());
+}
+
+function drawPolygons(vp, points, color, outline, stWeight) {
     for (let i = 0; i < vp.length; i++) {
         let plg = vp[i];
         let p = points[i];
         if (plg) {
             push();
-            fill(get(p[0], p[1]));
+            if (color) {
+                fill(color);
+            } else {
+                fill(get(p[0], p[1]));
+            }
+            if (outline) {
+                stroke(outline);
+                strokeWeight(stWeight);
+                strokeJoin(ROUND);
+                strokeCap(ROUND);
+            } else {
+                noStroke();
+            }
+            smooth();
             polygon(plg);
             pop();
         }

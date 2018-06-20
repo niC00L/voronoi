@@ -11,9 +11,25 @@ let bgColor;
 let fgColor;
 let outColor;
 let points;
+let initSeed;
+let seed;
+
+function seededRandom(max, min) {
+    max = max || 1;
+    min = min || 0;
+
+    seed = (seed * 9301 + 49297) % 233280;
+    let rnd = seed / 233280;
+    return min + rnd * (max - min);
+}
+
+function newSeed() {
+    initSeed = Math.random();
+}
 
 function setup() {
     createCanvas(vw, vh);
+    newSeed();
     noLoop();
     countSlider = createSlider(1, 100, 30);
     noiseSlider = createSlider(0, 50, 0);
@@ -46,6 +62,7 @@ function handleFile(file) {
 }
 
 function makePoints() {
+    seed = initSeed;
     let grid = gridSize(vw, vh, countSlider.value());
 
     if (gridType.value() === "Grid") {
@@ -106,8 +123,9 @@ function drawPolygons(vp, points, color, outline, stWeight) {
 
 function randomPoints(start, end, count) {
     let points = [];
+    console.log(seed);
     for (let i = 0; i <= count; i++) {
-        points.push([random(start[0], end[0]), random(start[1], end[1])]);
+        points.push([seededRandom(start[0], end[0]), seededRandom(start[1], end[1])]);
     }
     return points;
 }
@@ -129,7 +147,7 @@ function gridPoints(width, height, xCount, yCount, offset) {
         for (let j = 0; j < yCount; j++) {
             let x = Math.floor(i * side + offset);
             let y = Math.floor(j * side + offset);
-            points.push([x + random(-noise, noise), y + random(-noise, noise)]);
+            points.push([x + seededRandom(-noise, noise), y + seededRandom(-noise, noise)]);
         }
     }
     return points;

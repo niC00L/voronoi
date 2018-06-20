@@ -10,6 +10,7 @@ let img;
 let bgColor;
 let fgColor;
 let outColor;
+let points;
 
 function setup() {
     createCanvas(vw, vh);
@@ -17,15 +18,18 @@ function setup() {
     countSlider = createSlider(1, 100, 30);
     noiseSlider = createSlider(0, 50, 0);
     strokeSlider = createSlider(0, 100, 1);
-    countSlider.input(draw);
-    noiseSlider.input(draw);
     strokeSlider.input(draw);
+    countSlider.input(makePoints);
+    noiseSlider.input(makePoints);
+
     gridType = createRadio();
     gridType.option("Grid");
     gridType.option("Random");
-    gridType.input(draw);
+    gridType.input(makePoints);
+
     file = createFileInput(handleFile);
-    file.input(draw);
+    file.input(makePoints);
+
     bgColor = createInput('#ffffff', 'color');
     fgColor = createInput('#ffffff', 'color');
     outColor = createInput('#000000', 'color');
@@ -39,6 +43,19 @@ function handleFile(file) {
         img = createImg(file.data).hide();
         resizeCanvas(img.width, img.height);
     }
+}
+
+function makePoints() {
+    let grid = gridSize(vw, vh, countSlider.value());
+
+    if (gridType.value() === "Grid") {
+        noiseSlider.show();
+        points = gridPoints(vw, vh, grid[0], grid[1], Math.floor(vw / grid[0] / 2));
+    } else if (gridType.value() === "Random") {
+        noiseSlider.hide();
+        points = randomPoints([0, 0], [vw, vh], countSlider.value());
+    }
+    draw();
 }
 
 function draw() {
@@ -55,19 +72,6 @@ function draw() {
         fillColor = fgColor.value();
     }
 
-    let grid = gridSize(vw, vh, countSlider.value());
-    let points;
-
-    if (gridType.value() === "Grid") {
-        noiseSlider.show();
-        points = gridPoints(vw, vh, grid[0], grid[1], Math.floor(vw / grid[0] / 2));
-    } else if (gridType.value() === "Random") {
-        noiseSlider.hide();
-        points = randomPoints([0, 0], [vw, vh], countSlider.value());
-    }
-    // } else {
-    //     points = triangleGrid(gridPoints(img.width, img.height, grid[0], grid[1], 0), grid[1]);
-    // }
     voronoi.extent([[0, 0], [vw, vh]]);
     let vp = voronoi(points).polygons();
 
@@ -126,34 +130,9 @@ function gridPoints(width, height, xCount, yCount, offset) {
             let x = Math.floor(i * side + offset);
             let y = Math.floor(j * side + offset);
             points.push([x + random(-noise, noise), y + random(-noise, noise)]);
-            // points.push([x, y]);
         }
     }
     return points;
-}
-
-function triangleGrid(grid, yCount) {
-    let side = Math.floor(img.height / yCount);
-    let p = 2;
-    for (let i = 0; i < grid.length; i++) {
-        if (i % 2 === 0) {
-            // grid[i][1] += (side);
-            grid[i][0] += (side / 2);
-        }
-    }
-    //     if (p % 2 === 0) {
-    //         console.log(i);
-    //         console.log(grid[i]);
-    //         // grid[i][0] += (side);
-    //         grid[i][1] += (side/2);
-    //         // grid[i][0] += (side/2);
-    //         // console.log(2, grid[i]);
-    //     }
-    //     if ((i+1) % Math.floor(xCount) === 0) {
-    //         p += 1;
-    //     }
-    // }
-    return grid;
 }
 
 function polygon(points) {

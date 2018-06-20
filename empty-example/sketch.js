@@ -16,6 +16,8 @@ let seed;
 let saveConfigButton;
 let loadConfigButton;
 let imgData;
+let saveButton;
+let clearImgButton;
 
 function loadConfig(config) {
     initSeed = config.initSeed;
@@ -69,12 +71,11 @@ function newSeed() {
 }
 
 function setup() {
-    createCanvas(vw, vh);
-    newSeed();
-    noLoop();
+    createCanvas(vw, vh, SVG);
+
     countSlider = createSlider(1, 100, 30);
     noiseSlider = createSlider(0, 50, 0);
-    strokeSlider = createSlider(0, 100, 1);
+    strokeSlider = createSlider(0, 100, 2);
     strokeSlider.input(draw);
     countSlider.input(makePoints);
     noiseSlider.input(makePoints);
@@ -82,7 +83,8 @@ function setup() {
     gridType = createRadio();
     gridType.option("Grid");
     gridType.option("Random");
-    gridType.input(makePoints);
+    gridType.value("Random");
+    gridType.changed(makePoints);
 
     fileInput = createFileInput(handleFile);
     // fileInput.input(makePoints);
@@ -98,16 +100,37 @@ function setup() {
     saveConfigButton.mousePressed(saveConfig);
 
     loadConfigButton = createFileInput(handleFile);
+
+    saveButton = createButton("Save SVG");
+    saveButton.mousePressed(saveImg);
+
+    clearImgButton = createButton("Clear image");
+    clearImgButton.mousePressed(clearImg);
+
+    newSeed();
+    makePoints();
+    noLoop();
+}
+
+function clearImg() {
+    imgData = null;
+    img = null;
+    draw();
+}
+
+function saveImg() {
+    save();
 }
 
 function handleFile(file) {
     if (file.type === "image") {
         imgData = file.data;
-        img = createImg(file.data, "", function () {
+        img = loadImage(file.data, function () {
             vw = img.width;
             vh = img.height;
+            resizeCanvas(vw, vh);
             makePoints();
-        }).hide();
+        });
     } else if (file.subtype === "json") {
         loadConfig(JSON.parse(Get(file.data)));
     }
@@ -127,12 +150,10 @@ function makePoints() {
     if (gridType.value() === "Grid") {
         noiseSlider.show();
         points = gridPoints(vw, vh, grid[0], grid[1], Math.floor(vw / grid[0] / 2));
-        // } else if (gridType.value() === "Random") {
-    } else {
+    } else if (gridType.value() === "Random") {
         noiseSlider.hide();
         points = randomPoints([0, 0], [vw, vh], countSlider.value());
     }
-    resizeCanvas(vw, vh);
     draw();
 }
 
@@ -162,7 +183,7 @@ function drawPolygons(vp, points, color, outline, stWeight) {
             if (color) {
                 fill(color);
             } else {
-                fill(get(p[0], p[1]));
+                fill(img.get(p[0], p[1]));
             }
             if (outline) {
                 stroke(outline);
@@ -214,6 +235,8 @@ function polygon(points) {
     beginShape();
     points.forEach(function (p) {
         vertex(p[0], p[1]);
+        // bezierVertex(p[0], p[1]);
+
     });
     endShape(CLOSE);
 }

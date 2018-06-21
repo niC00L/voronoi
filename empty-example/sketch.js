@@ -1,5 +1,7 @@
-let vw = $(window).width() - 300;
-let vh = $(window).height() - 200;
+let iw = $(window).width() - 320;
+let ih = $(window).height() - 10;
+let vw = iw;
+let vh = ih;
 let voronoi = d3.voronoi();
 let img;
 let points;
@@ -9,7 +11,6 @@ let imgData;
 
 function setup() {
     createCanvas(vw, vh, SVG);
-
     createUI();
 
     newSeed();
@@ -30,6 +31,12 @@ function draw() {
     }
     voronoi.extent([[0, 0], [vw, vh]]);
     let vp = voronoi(points).polygons();
+
+    if(img) {
+        clearImgButton.show();
+    } else {
+        clearImgButton.hide();
+    }
 
     drawPolygons(vp, points, fillColor, outColor.value(), strokeSlider.value());
 }

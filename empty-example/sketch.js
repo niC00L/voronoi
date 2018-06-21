@@ -60,6 +60,8 @@ function makePoints() {
     } else if (gridType.value() === "Random") {
         noiseSlider.hide();
         points = randomPoints([0, 0], [vw, vh], countSlider.value());
+    } else if (gridType.value() === "Custom") {
+        points = [];
     }
     draw();
 }

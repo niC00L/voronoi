@@ -36,6 +36,7 @@ $(function () {
     // $("#defaultradio0-0, [for=defaultradio0-0]").wrapAll("<div class='custom-control custom-radio' />");
     // $("#defaultradio0-1, [for=defaultradio0-1]").wrapAll("<div class='custom-control custom-radio' />");
     // $(".radios label").addClass("custom-control-label");
+    $(".radios label").after("<br />");
     // $(".radios input").addClass("custom-control-input");
 });
 
@@ -53,6 +54,7 @@ function createUI() {
     gridType = createRadio();
     gridType.option("Grid");
     gridType.option("Random");
+    gridType.option("Custom");
     gridType.value("Random");
     gridType.changed(makePoints);
 

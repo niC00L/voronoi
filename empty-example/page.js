@@ -99,7 +99,10 @@ function loadConfig(config) {
     bgColor.value(config.bgColor);
     fgColor.value(config.fgColor);
     outColor.value(config.outColor);
-    handleFile(config.img);
+    customPoints = config.customPoints;
+    if (config.img.data) {
+        handleFile(config.img);
+    }
     makePoints();
     draw();
 }
@@ -114,6 +117,7 @@ function saveConfig() {
         "bgColor": bgColor.value(),
         "fgColor": fgColor.value(),
         "outColor": outColor.value(),
+        "customPoints": customPoints,
         "img": {
             "data": imgData,
             "type": "image",
@@ -146,6 +150,7 @@ function handleFile(file) {
     if (file.type === "image") {
         imgData = file.data;
         img = loadImage(file.data, function () {
+            fgColor.hide();
             vw = img.width;
             vh = img.height;
             resizeCanvas(vw, vh);

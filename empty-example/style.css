@@ -53,6 +53,12 @@ body, html {
     border-bottom: 1px solid #e2e2e2;
 }
 
+.ui-group--image {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
 .ui-group__subtitle {
     display: inline-block;
     width: 40%;

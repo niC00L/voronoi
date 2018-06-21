@@ -5,6 +5,7 @@ let vh = ih;
 let voronoi = d3.voronoi();
 let img;
 let points;
+let customPoints = [];
 let initSeed;
 let seed;
 let imgData;
@@ -32,7 +33,7 @@ function draw() {
     voronoi.extent([[0, 0], [vw, vh]]);
     let vp = voronoi(points).polygons();
 
-    if(img) {
+    if (img) {
         clearImgButton.show();
     } else {
         clearImgButton.hide();
@@ -61,9 +62,16 @@ function makePoints() {
         noiseSlider.hide();
         points = randomPoints([0, 0], [vw, vh], countSlider.value());
     } else if (gridType.value() === "Custom") {
-        points = [];
+        points = customPoints;
     }
     draw();
+}
+
+function mousePressed() {
+    if (gridType.value() === "Custom" && $(event.target).closest("svg").length > 0) {
+        customPoints.push([event.pageX, event.pageY]);
+        draw();
+    }
 }
 
 function gridSize(width, height, count) {

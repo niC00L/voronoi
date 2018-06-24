@@ -11,6 +11,7 @@ body, html {
     height: 100vh;
     padding: 20px 25px;
     border-left: 1px solid #d3d3d3;
+    background-color: rgba(255, 255, 255, .6);
 }
 
 .slidecontainer {
@@ -50,7 +51,7 @@ body, html {
 .ui-group {
     margin-bottom: 20px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #e2e2e2;
+    border-bottom: 1px solid rgba(0,0,0, .3);
 }
 
 .ui-group--image {

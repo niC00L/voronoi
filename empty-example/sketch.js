@@ -23,11 +23,12 @@ function draw() {
     background(bgColor.value());
     let fillColor = fgColor.value();
     if (img) {
-        image(img, 0, 0, vw, vh);
-        fgColor.hide();
+        console.log("imag");
+        $("#uiFgColor").hide();
         fillColor = null;
     } else {
-        fgColor.show();
+        console.log("no imag");
+        $("#uiFgColor").show();
         fillColor = fgColor.value();
     }
     voronoi.extent([[0, 0], [vw, vh]]);

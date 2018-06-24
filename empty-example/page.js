@@ -137,6 +137,7 @@ function clearImg() {
     img = null;
     vw = iw;
     vh = ih;
+    fileInput.data = null;
     resizeCanvas(iw, ih);
     makePoints();
     console.log(iw, ih);
